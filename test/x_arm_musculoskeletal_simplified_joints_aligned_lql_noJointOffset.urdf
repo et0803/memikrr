@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<robot name="x_arm_musculoskeletal_simplified_joints_aligned_lql_noJointOffset">
+
+  <link name="base"/>
+  <joint name="thoraxToBase" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base" />
+    <child
+      link="thorax" />
+    <axis
+      xyz="0 0 1" />   <!--r_z = 6.8557 deg (0.1197 rad)-->
+    <limit
+      lower="-1.6581"
+      upper="2.2689"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="thorax" />  
+  
+  <joint name="upperarm1ToThorax" type="revolute">
+    <origin
+      xyz="-0.007939795542074 -0.003210000000000 0.216364773157572"
+      rpy="0 0 0" /> 
+    <parent
+      link="thorax" />
+    <child
+      link="upperarm1" />
+    <axis
+      xyz="0 1 0" />
+	<limit
+      lower="-1.6581"
+      upper="2.2689"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>  
+  <link name="upperarm1" />
+  
+  <joint name="upperarm2ToUpperarm1" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="upperarm1" />
+    <child
+      link="upperarm2" />
+    <axis
+      xyz="-1 0 0" />
+	<limit
+      lower="0"
+      upper="3.1416"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="upperarm2" />
+
+  <joint name="upperarm3ToUpperarm2" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="upperarm2" />
+    <child
+      link="upperarm3" />
+    <axis
+      xyz="0 1 0" />
+	<limit
+      lower="-1.5708"
+      upper="2.0944"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="upperarm3" />
+ 
+  <joint name="ulnaToUpperarm3" type="revolute">
+    <origin
+      xyz="0 -0.303365000000000 0"
+      rpy="0 0 0" />
+    <parent
+      link="upperarm3" />
+    <child
+      link="ulna" />
+    <axis
+      xyz="0 0 1" />
+	<limit
+      lower="0"
+      upper="2.2689"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="ulna" />
+  
+   <joint name="radius2ulna" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="ulna" />
+    <child
+      link="radius" />
+    <axis
+      xyz="0 1 0" />
+	<limit
+      lower="-1.5708"
+      upper="1.5708"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="radius" />
+  
+  <joint name="proximal_row2radius" type="revolute">
+    <origin
+      xyz="0 -0.247625000000000 0"
+      rpy="0 0 0" />
+    <parent
+      link="radius" />
+    <child
+      link="proximal_row" />
+    <axis
+      xyz="0 0 -1" />
+	<limit
+      lower="-0.1745"
+      upper="0.4363"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="proximal_row" />
+  
+  <joint name="wrist2proximal_row" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="proximal_row" />
+    <child
+      link="wrist" />
+    <axis
+      xyz="1 0 0" />
+	<limit
+      lower="-1.2217"
+      upper="1.2217"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="wrist" />
+  
+  <joint name="hand2wrist" type="revolute">
+    <origin
+      xyz="0 -0.046120000000000 -0.027670000000000"
+      rpy="0 0 -1.570796326794897" />
+    <parent
+      link="wrist" />
+    <child
+      link="hand" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link name="hand" />
+</robot>

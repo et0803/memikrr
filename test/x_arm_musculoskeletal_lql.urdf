@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<robot name="x_arm_musculoskeletal">
+
+  <link name="base"/>
+  <joint name="thorax2base" type="revolute">
+    <origin
+      xyz="0.00000 0.00000 0.00000"
+      rpy="0 0 0" /> 
+    <parent
+      link="base" />
+    <child
+      link="thorax" />
+    <axis
+      xyz="0 0 1" /> <!--r_z = 6.8557 deg  (0.1197 rad)-->
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="thorax">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="thorax.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="thorax.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="clavicle2thorax_sternoclavicular_r2" type="revolute">
+    <origin
+      xyz="0.00742 0.00813 0.02987"
+      rpy="0 0 0" />
+    <parent
+      link="thorax" />
+    <child
+      link="clavicle_r1" />
+    <axis
+      xyz="0.015299999999999999 0.98929869999999998 -0.14509996" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="clavicle_r1" />
+  <joint name="clavicle2thorax_sternoclavicular_r3" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="clavicle_r1" />
+    <child
+      link="clavicle" />
+    <axis
+      xyz="-0.99447253999999996 0 -0.10499695000000001" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="clavicle">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="clavicle.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="clavicle.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="clavphant2clavicle_unrotscap_r3" type="revolute">
+    <origin
+      xyz="-0.01681 0.02354 0.15900"
+      rpy="0 0 0" />
+    <parent
+      link="clavicle" />
+    <child
+      link="clavphant_r1" />
+    <axis
+      xyz="-0.99447253999999996 0 -0.10499695000000001" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="clavphant_r1" />
+  <joint name="clavphant2clavicle_unrotscap_r2" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="clavphant_r1" />
+    <child
+      link="clavphant" />
+    <axis
+      xyz="0.015299999999999999 0.98929869999999998 -0.14509996" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="clavphant" />
+
+
+  <joint name="scapula2clavphant_acromioclavicular_r2" type="revolute">
+    <origin
+      xyz="0.00000 0.00000 0.00000"
+      rpy="0 0 0" />
+    <parent
+      link="clavphant" />
+    <child
+      link="scapula_r1" />
+    <axis
+      xyz="0.15709492999999999 0.94726858999999997 -0.27929088000000002" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="scapula_r1" />
+  <joint name="scapula2clavphant_acromioclavicular_r3" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="scapula_r1" />
+    <child
+      link="scapula_r2" />
+    <axis
+      xyz="-0.75408403999999996 0.29759402000000001 0.58548703000000002" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="scapula_r2" />
+  <joint name="scapula2clavphant_acromioclavicular_r1" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="scapula_r2" />
+    <child
+      link="scapula" />
+    <axis
+      xyz="0.63769984999999996 0.11859997 0.76109981999999998" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="scapula">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="scapula.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="scapula.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="scapphant2scapula_unrothum_r1" type="revolute">
+    <origin
+      xyz="-0.00980 -0.03488 0.00923"
+      rpy="0 0 0" />
+    <parent
+      link="scapula" />
+    <child
+      link="scapphant_r1" />
+    <axis
+      xyz="0.63769984999999996 0.11859997 0.76109981999999998" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="scapphant_r1" />
+  <joint name="scapphant2scapula_unrothum_r3" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="scapphant_r1" />
+    <child
+      link="scapphant_r2" />
+    <axis
+      xyz="-0.75408403999999996 0.29759402000000001 0.58548703000000002" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="scapphant_r2" />
+  <joint name="scapphant2scapula_unrothum_r2" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="scapphant_r2" />
+    <child
+      link="scapphant" />
+    <axis
+      xyz="0.15709492999999999 0.94726858999999997 -0.27929088000000002" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="scapphant" />
+
+
+  <joint name="humphant2scapphant_elv_angle" type="revolute">
+    <origin
+      xyz="0.00000 0.00000 0.00000"
+      rpy="0 0 0" />
+    <parent
+      link="scapphant" />
+    <child
+      link="humphant" />
+    <axis
+      xyz="0.0047999999999999996 0.99908918000000002 0.042400010000000002" />
+    <limit
+      lower="-1.65806279"
+      upper="2.2689280300000001"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="humphant" />
+  
+  
+  <joint name="humphant12humphant_shoulder_elv" type="revolute">
+    <origin
+      xyz="0.00000 0.00000 0.00000"
+      rpy="0 0 0" />
+    <parent
+      link="humphant" />
+    <child
+      link="humphant1_r1" />
+    <axis
+      xyz="-0.99826135999999999 0.0023 0.058898020000000002" />
+    <limit
+      lower="0"
+      upper="3.14"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="humphant1_r1" />
+  <joint name="humphant12humphant_shoulder1_r2" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="humphant1_r1" />
+    <child
+      link="humphant1" />
+    <axis
+      xyz="0.0047999999999999996 0.99908918000000002 0.042400010000000002" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="humphant1" />
+  
+  
+  <joint name="humerus2humphant1_shoulder_rot" type="revolute">
+    <origin
+      xyz="0.00000 0.00000 0.00000"
+      rpy="0 0 0" />
+    <parent
+      link="humphant1" />
+    <child
+      link="humerus" />
+    <axis
+      xyz="0.0047999999999999996 0.99908918000000002 0.042400010000000002" />
+    <limit
+      lower="-1.5707963300000001"
+      upper="2.0943950999999998"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="humerus" >
+	<inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="humerus.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="humerus.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  
+  <joint name="ulna2humerus_elbow_flexion" type="revolute">
+    <origin
+      xyz="0.00626 -0.29794 -0.01262"
+      rpy="0 0 0" />
+    <parent
+      link="humerus" />
+    <child
+      link="ulna" />
+    <axis
+      xyz="0.049400010000000001 0.036600010000000002 0.99810825000000003" />
+    <limit
+      lower="0"
+      upper="2.2689280300000001"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="ulna" >
+	<inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="ulna.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="ulna.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="radius2ulna_pro_sup" type="revolute">
+    <origin
+      xyz="0.00038 -0.01085 0.01887"
+      rpy="0 0 0" />
+    <parent
+      link="ulna" />
+    <child
+      link="radius" />
+    <axis
+      xyz="-0.017160990000000001 0.99266564000000002 -0.11966796" />
+    <limit
+      lower="-1.5707963300000001"
+      upper="1.5707963300000001"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="radius" >
+	<inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="radius.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="radius.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="proximal_row2radius_deviation" type="revolute">
+    <origin
+      xyz="0.01698 -0.22831 0.02359"
+      rpy="0 0 0" />
+    <parent
+      link="radius" />
+    <child
+      link="proximal_row_r1" />
+    <axis
+      xyz="-0.81906400000000001 -0.13561100000000001 -0.55744400000000005" />
+    <limit
+      lower="-0.17453293"
+      upper="0.43633231"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="proximal_row_r1" />
+  <joint name="proximal_row2radius_flexion" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="proximal_row_r1" />
+    <child
+      link="proximal_row" />
+    <axis
+      xyz="0.95642673 -0.25220693 0.14710396000000001" />
+    <limit
+      lower="-0.785398"
+      upper="0.785398"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="proximal_row">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="proximal_row_geom.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="proximal_row_geom.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="hand2proximal_row_wrist_hand_r1" type="revolute">
+    <origin
+      xyz="0.00368 -0.01389 0.00215"
+      rpy="0 0 0" />
+    <parent
+      link="proximal_row" />
+    <child
+      link="wrist_hand_r1" />
+    <axis
+      xyz="0.89913569999999998 -0.34905288000000001 -0.26403990999999999" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="wrist_hand_r1" />
+  <joint name="hand2proximal_row_wrist_hand_r3" type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="wrist_hand_r1" />
+    <child
+      link="wrist_hand" />
+    <axis
+      xyz="0.99711852999999995 0.01069999 -0.075100959999999994" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.03" />
+  </joint>
+  <link name="wrist_hand" >
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="hand_flat.stl" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="hand_grasp.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="ideal_grasp2wrist_hand" type="revolute">
+    <origin
+      xyz="0.00000 -0.04612 -0.02767"
+      rpy="0 0 -1.570796326794897" /> <!--fingers rotate regard to palm = 19 deg -->
+    <parent
+      link="wrist_hand" />
+    <child
+      link="hand_grasp_center" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="0.1"
+      velocity="0.05" />
+  </joint>
+  <link name="hand_grasp_center" />
+</robot>
