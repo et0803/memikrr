@@ -1,0 +1,249 @@
+opensim 的analysisSet可选为 
+Kinematics
+Actuation
+PointKinematics
+BodyKinematics
+MuscleAnalysis
+JointReaction
+StaticOptimization
+ForceReporter
+StatesReporter
+InducedAccelerations
+ProbeReporter
+OutputReporter
+我们主要分析StaticOptimization
+
+(1), H:\opensim-core\Applications\Analyze\test\testStaticOptimization.cpp 直接调用analyze的run
+1, AnalyzeTool analyze1("arm26_Setup_StaticOptimization.xml");
+2, analyze1.setResultsDir(resultsDir);
+3, analyze1.run();
+4, Storage activations1(resultsDir+"/arm26_StaticOptimization_activation.sto"); //read in the result file.
+5, Storage stdActivations1(std_activation);
+
+(2), H:\opensim-core\OpenSim\Tools\AnalyzeTool.cpp 中的代码可以考虑使用，主要是通过文件来设置model_file，通过run来运行，重点关注aModel.equilibrateMuscles(s);
+1, int nq = aModel.getNumCoordinates();  // in createStatesStorageFromCoordinatesAndSpeeds(const Model& aModel, const Storage& aQStore, const Storage& aUStore),  aUStore is optional. Assumes coordinates and speeds are already in radians. Fills in zeros for actuator and contact set states.
+2, int nu = aModel.getNumSpeeds();
+3, int ny = aModel.getNumStateVariables();
+4, Array<string> stateNames("", ny);
+5, stateNames = aModel.getStateVariableNames();
+6, stateNames.insert(0, "time");
+7, for(int i=1; i<=nq; ++i){
+       stateNames[i] = qLabels[i];
+   }
+8, for(int i=1; i<=nu; ++i){
+       stateNames[i+nq] = uLabels[i];
+   }
+9, const SimTK::State &s = aModel.getWorkingState();
+10, SimTK::Vector stateValues = aModel.getStateVariableValues(s);
+11, Storage *statesStore = new Storage(512,"states");
+12, statesStore->setColumnLabels(stateNames);
+13, Array<double> y(0.0,ny);
+14, for(int index=0; index<aQStore.getSize(); index++) {
+        double t;
+        aQStore.getTime(index,t);
+        aQStore.getData(index,nq,&y[0]);
+        aUStore.getData(index,nu,&y[nq]);
+        statesStore->append(t,ny,&y[0]);
+    }
+15, return statesStore;
+
+16, Storage temp(_statesFileName); // in loadStatesFromFile(SimTK::State& s),  * Initialize the controls, states, and external loads from files.  filter the motion coordinates with existing speed file.
+17, _model->formStateStorage(temp, *_statesStore, true);
+18, Storage coordinatesStore(_coordinatesFileName);
+19, coordinatesStore.pad(coordinatesStore.getSize()/2);
+20, coordinatesStore.lowpassIIR(_lowpassCutoffFrequency);
+21, _model->getSimbodyEngine().formCompleteStorages( s, coordinatesStore, qStore, uStore);  //compute the uStore. And qStore and uStore returned are in radians
+
+22, _printResultFiles=aToWrite; // in setPrintResultFiles(bool aToWrite). Turn On/Off writing result storages to files.
+
+23, SimTK::State& s = (!plotting)? _model->initSystem(): _model->updWorkingState(); 
+24, _model->getMultibodySystem().realize(s, SimTK::Stage::Position );
+25, run(s, *_model, iInitial, iFinal, *_statesStore, _solveForEquilibriumForAuxiliaryStates);
+
+26, Storage temp(_statesFileName);  // in void AnalyzeTool::loadStatesFromFile(SimTK::State& s). save data into _statesStore
+27, _statesStore = new Storage();
+28, _statesStore->setName("states"); // Name appears in GUI
+29, _model->formStateStorage(temp, *_statesStore, true);
+
+30, int ny = s.getNY();  //size of dependent values
+31, const Array<string>& labels =  aStatesStore.getColumnLabels();  //*_statesStore 赋值给了aStatesStore;
+32, const Array<std::string>& stateNames = aStatesStore.getColumnLabels();
+33, Array<std::string> modelStateNames = aModel.getStateVariableNames();
+34, for (int k = 0; k < nsData; ++k) {
+        for (int j = 0; j < modelStateNames.size(); ++j) {
+            if (stateNames[k+1] == modelStateNames[j]) { //+1 skip "time"
+                dataToModel[k] = j;
+            }
+        }
+    }
+35, SimTK::Vector stateValues = aModel.getStateVariableValues(s);
+36, for (int k=0; k < nsData; ++k) {
+        stateValues[dataToModel[k]] = stateData[k];
+    }
+37, aModel.setStateVariableValues(s, stateValues);
+38, aModel.assemble(s); // Adjust configuration to match constraints and other goals
+39, if(aSolveForEquilibrium){
+        try{// might not be able to equilibrate if model is in
+            // a non-physical pose. For example, a pose where the 
+            // muscle length is shorter than the tendon slack-length.
+            // the muscle will throw an Exception in this case.
+            aModel.equilibrateMuscles(s);
+        }
+        catch (const std::exception& e) {
+            log_warn("AnalyzeTool::run() unable to equilibrate muscles at "
+                "time = {}. Reason: {}.", t, e.what());
+        }
+    }
+//https://simtk.org/api_docs/simbody/3.5/classSimTK_1_1System.html#a39adc09111d252b2253485047ee7ce30
+//https://usermanual.wiki/Pdf/SimbodyAdvancedProgrammingGuide.915323932/view	
+//line 457 and 1183 in   https://github.com/simbody/simbody/blob/a8f49c84e98ccf3b7e6f05db55a29520e5f9c176/SimTKcommon/Simulation/src/System.cpp
+//https://github.com/simbody/simbody/tree/master/Simbody/doc
+//realize definition in P53 in SimbodyTheoryManual.pdf
+40, aModel.getMultibodySystem().realize(s, SimTK::Stage::Velocity);   // Make sure model is at least ready to provide kinematics.
+
+
+(3), H:\opensim-core\OpenSim\Analyses\StaticOptimization.cpp 是so的核心代码
+1, sWorkingCopy.setTime(s.getTime());
+   sWorkingCopy.setQ(s.getQ());
+   sWorkingCopy.setU(s.getU());
+   // No need to copy Zs to be consistent with record method below 
+   _modelWorkingCopy->getMultibodySystem().realize(s,SimTK::Stage::Velocity);  //static optimization only need velocity stage to equilibrateMuscles
+   _modelWorkingCopy->equilibrateMuscles(sWorkingCopy);
+
+2, StaticOptimization::StaticOptimization(Model *aModel) :  //直接用model
+		Analysis(aModel),
+		_numCoordinateActuators(0),
+		_useModelForceSet(_useModelForceSetProp.getValueBool()),
+		_activationExponent(_activationExponentProp.getValueDbl()),
+		_useMusclePhysiology(_useMusclePhysiologyProp.getValueBool()),
+		_convergenceCriterion(_convergenceCriterionProp.getValueDbl()),
+		_maximumIterations(_maximumIterationsProp.getValueInt()),
+		_modelWorkingCopy(NULL)
+	{
+		setNull();
+	
+		if(aModel) setModel(*aModel);
+		else allocateStorage();
+	}
+
+
+(4.0), H:\opensim-core\OpenSim\Simulation\Test\testForces.cpp 
+0, osimModel.getMultibodySystem().realize(osim_state, Stage::Position);
+1, osimModel.getMultibodySystem().realize(osim_state, Stage::Acceleration);
+2, model.getMultibodySystem().realize(state, Stage::Dynamics);
+3, osimModel.getMultibodySystem().realize(osim_state, Stage::Velocity); 
+(4.1), H:\opensim-core\OpenSim\Simulation\Test\testFrames.cpp
+0, Model* pendulum = new Model("double_pendulum.osim");
+1, const OpenSim::Body& rod1 = pendulum->getBodySet().get("rod1");
+2, SimTK::State& s = pendulum->initSystem();
+3, pendulum->getSystem().getDefaultSubsystem();
+4, double radAngle = SimTK::convertDegreesToRadians(ang);
+5, const Coordinate& coord = pendulum->getCoordinateSet().get("q1"); //要用引用才能赋值。
+6, coord.setValue(s, radAngle);
+7, const SimTK::Transform& xform = rod1.getTransformInGround(s);
+(4.3), H:\opensim-core\OpenSim\Simulation\Test\testInitState.cpp 中有肌肉力平衡案例 model.equilibrateMuscles(state);
+0, Model model(modelFile);
+1, ControlSetController* controller = new ControlSetController();
+2, controller->setControlSetFileName("arm26_StaticOptimization_controls.xml");
+3, model.addController( controller );
+4, State& state = model.initSystem();
+5, Vector y1 = state.getY();
+6, y1 = state.getY();
+7, model.equilibrateMuscles(state);
+8, state.getY().dump("y1: State after equilibrateMuscles:");
+9, State& state2 = model.initializeState();
+
+
+(5), H:\opensim-core\OpenSim\Examples\SimpleOptimizationExample\SimpleOptimizationExample.cpp
+0, Model osimModel("Arm26_Optimize.osim");
+1, State& si = osimModel.initSystem();
+2, const CoordinateSet& coords = osimModel.getCoordinateSet();
+3, coords.get("r_shoulder_elev").setValue(si, 0.0);
+4, const Set<Muscle> &muscleSet = osimModel.getMuscles();
+   for(int i=0; i< muscleSet.getSize(); i++ ){
+       muscleSet[i].setActivation(si, 1.0);   //有set应该也有getActivation
+       const ActivationFiberLengthMuscle* afl = ActivationFiberLengthMuscle::safeDownCast(&muscleSet[i]);
+       afl->setFiberLength(si, .1);
+   }
+5, OpenSim::Coordinate& elbowFlexCoord = osimModel.updCoordinateSet().get("r_elbow_flex");
+   elbowFlexCoord.setValue(si, 1.0);
+6, //osimModel.getMultibodySystem().realize(si, Stage::Velocity);
+7, osimModel.equilibrateMuscles(si);
+8, OpenSim::Coordinate& elbowFlexCoord = osimModel.updCoordinateSet().get("r_elbow_flex");
+9, elbowFlexCoord.setValue(s, newControls[0]);
+10, const Set<Muscle> &muscleSet = osimModel.getMuscles();
+11, for(int i=0; i< muscleSet.getSize(); i++ ){
+        muscleSet[i].setActivation(s, 1.0);
+        const ActivationFiberLengthMuscle* afl = ActivationFiberLengthMuscle::safeDownCast(&muscleSet[i]);
+        if (afl) afl->setFiberLength(s, .1);
+    }
+12, osimModel.equilibrateMuscles(s);
+13, const OpenSim::Muscle& bicShort = osimModel.getMuscles().get("BICshort");
+14, f = -bicShort.computeMomentArm(s, elbowFlexCoord);
+
+		
+(6), H:\opensim-core\Applications\Analyze\analyze.cpp 中只有关于opensim中analyze tool的调用方式，定义一个AnalyzeTool对象，和matlab接口的规范是一样的，要输入setup file xml配置文件来仿真，结果输出到文件。
+0, AnalyzeTool *tool = new AnalyzeTool();
+1, analyze.run();
+
+
+(7), H:\opensim-core\Applications\Analyze\test\testAnalyzeTool.cpp 中的testTugOfWar函数中有muscle.computeEquilibrium(s);
+0, AnalyzeTool analyze("Tug_of_War_Setup_Analyze.xml");
+1, analyze.setCoordinatesFileName("");
+2, analyze.setStatesFileName("");
+3, Model& model = analyze.getModel();
+4, Millard2012EquilibriumMuscle& muscle = static_cast<Millard2012EquilibriumMuscle&>(model.updMuscles()[0]);
+5, analyze.setStatesFileName(dataFileName);
+6, muscle.set_minimum_activation(0.0);
+7, analyze.setCoordinatesFileName(dataFileName);
+8, SimTK::State s = model.getWorkingState();
+9, muscle.setActivation(s, muscle.get_default_activation());
+10, muscle.computeEquilibrium(s);
+11, model.realizeDynamics(s);
+
+
+(8), H:\opensim-core\OpenSim\Examples\OptimizationExample_Arm26\OutputReference\OptimizationExample.cpp
+0, ExampleOptimizationSystem(int numParameters, State& s, Model& aModel): numControls(numParameters), OptimizerSystem(numParameters), si(s), osimModel(aModel){}
+1, osimModel.getMultibodySystem().realize(s, Stage::Acceleration);
+2, osimModel.getMultibodySystem().realize(s, Stage::Velocity);
+3, osimModel.getControls(s).dump("Model Controls:")
+4, osimModel.getSimbodyEngine().getVelocity(s, osimModel.getBodySet().get("r_ulna_radius_hand"), massCenter, velocity);
+5, Model osimModel("Arm26_Optimize.osim");
+6, State& si = osimModel.initSystem();
+7, const CoordinateSet& coords = osimModel.getCoordinateSet();
+8, coords.get("r_shoulder_elev").setValue(si, -1.57079633);
+9, const Set<Muscle> &muscleSet = osimModel.getMuscles();
+10, muscleSet[i].setActivation(si, 0.01);
+11, osimModel.equilibrateMuscles(si);
+
+(9), /home/lql/software/opensim-core/OpenSim/Tests/SimpleOptimizationExample/testSimpleOptimizationExample.cpp
+Model osimModel("Arm26_Optimize.osim");
+1, State& si = osimModel.initSystem();
+2, const CoordinateSet& coords = osimModel.getCoordinateSet(); // initialize the starting shoulder angle
+3, coords.get("r_shoulder_elev").setValue(si, 0.0);
+4, const Set<Muscle> &muscleSet = osimModel.getMuscles();// Set the initial muscle activations 
+5, for(int i=0; i< muscleSet.getSize(); i++ ){
+       muscleSet[i].setActivation(si, 1.0);
+       const ActivationFiberLengthMuscle* afl = ActivationFiberLengthMuscle::safeDownC
+       afl->setFiberLength(si, .1);
+   }
+6, OpenSim::Coordinate& elbowFlexCoord = osimModel.updCoordinateSet().get("r_elbow_fle
+7, elbowFlexCoord.setValue(si, 1.0);
+8, //osimModel.getMultibodySystem().realize(si, Stage::Velocity);   //in StaticOptimization.cpp, this realize at velocity stage is perform before muscles equilibrium
+9, // Make sure the muscles states are in equilibrium
+10, osimModel.equilibrateMuscles(si);
+11, ExampleOptimizationSystem sys(1, si, osimModel); // Initialize the optimizer system we've defined.
+
+into new object ExampleOptimizationSystem:
+1, State s = si; // make a copy of out initial states
+2, OpenSim::Coordinate& elbowFlexCoord = osimModel.updCoordinateSet().get("r_elbow_flex"); // Update the coordinate value of r_elbow_flex
+3, elbowFlexCoord.setValue(s, newControls[0]);
+4, const Set<Muscle> &muscleSet = osimModel.getMuscles();// Now equilibrate muscles at this configuration
+5, for(int i=0; i< muscleSet.getSize(); i++ ){
+       muscleSet[i].setActivation(s, 1.0); // Make sure other muscle states are initialized the same with 1.0 activation, 0.1 fiberLength followed by equilibrium computation
+       const ActivationFiberLengthMuscle* afl = ActivationFiberLengthMuscle::safeDownCast(&muscleSet[i]);
+       if (afl) afl->setFiberLength(s, .1);
+   }
+6, osimModel.equilibrateMuscles(s); // Make sure the muscles states are in equilibrium
+7, const OpenSim::Muscle& bicShort = osimModel.getMuscles().get("BICshort");
+
