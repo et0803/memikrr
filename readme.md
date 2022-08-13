@@ -1,5 +1,5 @@
 # 1. Aim
-To replicate natural human arm posture by performing muscle effort minimization when given a desired hand(wrist) pose. The manuscript entitled ***Muscle-effort-minimization-inspired Kinematic Redundancy Resolution for Replicating Natural Posture of Human Arm*** has been accepted for publication in IEEE Transactions on Neural Systems and Rehabilitation Engineering.
+To replicate natural human arm posture by performing muscle effort minimization when given a desired hand(wrist) pose. The manuscript entitled [***Muscle-effort-minimization-inspired Kinematic Redundancy Resolution for Replicating Natural Posture of Human Arm***](https://ieeexplore.ieee.org/document/9855508) has been accepted for publication in IEEE Transactions on Neural Systems and Rehabilitation Engineering.
 
 <img src="https://github.com/et0803/memikrr/raw/main/doc/armSwivelAngleRange.gif" alt="armSwivelAngleRange" width="400">    <img src="https://github.com/et0803/memikrr/raw/main/doc/optimizedArmSwivelAngle.png" alt="optimizedArmSwivelAngle" width="400">
 
@@ -38,4 +38,4 @@ Figure note: a warmer color (red) in the muscles indicates a higher muscle effor
 1. Each try of muscle effort estimation will cause a memory leakage of about 1M bytes  by calling API to Opensim AnalyzeTool StaticOptimization module.
 
 # 6. Citation
-Wait for production processing...
+**Q. Li**, Y. Xia, X. Wang, P. Xin, W. Chen and C. Xiong, "Muscle-effort-minimization-inspired Kinematic Redundancy Resolution for Replicating Natural Posture of Human Arm," in IEEE Transactions on Neural Systems and Rehabilitation Engineering, 2022, doi: 10.1109/TNSRE.2022.3198400.
