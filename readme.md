@@ -38,4 +38,4 @@ Figure note: a warmer color (red) in the muscles indicates a higher muscle effor
 1. Each try of muscle effort estimation will cause a memory leakage of about 1M bytes  by calling API to Opensim AnalyzeTool StaticOptimization module.
 
 # 6. Citation
-**Q. Li**, Y. Xia, X. Wang, P. Xin, W. Chen and C. Xiong, "Muscle-effort-minimization-inspired Kinematic Redundancy Resolution for Replicating Natural Posture of Human Arm," in IEEE Transactions on Neural Systems and Rehabilitation Engineering, 2022, doi: 10.1109/TNSRE.2022.3198400.
+**Q. Li**, Y. Xia, X. Wang, P. Xin, W. Chen and C. Xiong, "Muscle-Effort-Minimization-Inspired Kinematic Redundancy Resolution for Replicating Natural Posture of Human Arm," in IEEE Transactions on Neural Systems and Rehabilitation Engineering, vol. 30, pp. 2341-2351, 2022, doi: 10.1109/TNSRE.2022.3198400.
